@@ -1,17 +1,14 @@
 /*!
- * EiEdit v0.0.1 
+ * EiEdit v0.0.6 
  * 2022 Kostyuchenko Sergey
  */
 
 /**
  * @description inline editor for tables. In the name of Eidelman!
- * @version 0.0.2
+ * @version 0.0.6
  * @author Kostyuchenko Sergey
  */
 
-/**
- * Проверка подключен ли jquery 
- */
  if (typeof jQuery === 'undefined') {
     throw new Error('jQuery не подключен !');
  }
@@ -20,27 +17,22 @@
 
 (function ($) {
 
-
-
     $.fn.eiedit = function(options) {
-
-        
 
         if (!this.is('table')) {
             throw new Error('EiEdit работает только с табличками!');
         }
 
         const $table = this;
-        
-        
-        /**
+
+          /**
          * Объединение конфигурационных настроек поумолчанию 
          * и заданных при инициализации плагина. 
          * При совпадении заданные при инициализации плагина 
          * перекрывают заданные поумолчанию. 
          */
         const settings = $.extend( {
-            /**
+             /**
              * Вывод отладочной информации в консоль.
              * Поумолчанию отключено.
              * @property debug
@@ -49,7 +41,7 @@
              */
             debug: false,
 
-            /**
+             /**
              * Прячет столбец с id.
              * Поумолчанию id отображается.
              * @property hideIdentifier
@@ -67,18 +59,7 @@
              */
             rowIdentifier: 'id',
 
-            /**
-             * Лежим редактирования таблицы.
-             * Поумолчанию 'default'.
-             * default - при клике на ячейку таблицы появляется поле ввода длч изменения знаяения.
-             * popover - при клике на ячейку таблицы появляется всплывающее окно с полем ввода и кнопками.
-             * @property typeOfEdit
-             * @type string
-             * 
-             */
-            typeOfEdit: 'default',
-
-            /**
+              /**
              * Путь по которому стучимся на бэкэнд.
              * Поумолчанию стучится на текущую страницу.
              * @property url
@@ -87,7 +68,6 @@
              */
             url: window.location.href,
 
-            
              /**
              * Формирование дополнительной колонки для предоставления
              * добавления рядов в таблице и их удаления.
@@ -108,14 +88,14 @@
              * 
              */
             messageOn:false,
-
+            
              /**
              * Время через которое появляется ошибка: "Нет ответа от сервера"
              * @property timeOut
              * @type ineger
              * 
              */
-            timeOut:6000,
+              timeOut:6000,
 
               /**
              * Время на которое будет появляться собщение.
@@ -126,7 +106,8 @@
              */
             delay:3000,
 
-            
+
+            idDigest: 0,// добавить получение id справочника автоматически
           }, options);
 
         function info(text){
@@ -135,90 +116,75 @@
             }
         }
 
-        /**
-        * Проверка подключен ли bootstrap popover 
-        */
-        // if(settings.typeOfEdit === 'popover'){
-          
-        //     if ($.isFunction($.fn.popover)) {
-        //         info('Bootstrap Popover подключен!');
-        //     }
-        //     else {
-        //         throw new Error('Bootstrap Popover не подключен!');
-        //     }
-        // }
-
-    
-
         info('EiEdit Текущая версия jQuery ' + $.fn.jquery);
         info('Инициализация EiEdit выполнена!');
 
         info('Переданные параметры:');
         info(options);
-        info('урл :');
-        info(window.location.pathname.split( '/' ).length);
-        info(window.location.pathname.split( '/' ));
 
-        let TestElement = {
-            newElement: function() {
-                alert('NEW');
-            }
-
-        }
-
-        /**
+          /**
          * 
          *
          * @type object
          */
-        let DrawElement = {
+           let DrawElement = {
             viewElement: function() {
-                let element = $(this);
-                let eieditElem = '<input class="form-control eiedit-block eiedit-input" type="text">';
-                let eieditCssClass = 'input-edit';
+                if(!$(this).hasClass("input-edit")){
 
-                if(settings.typeOfEdit === 'popover') {
-                    eieditElem = "<div class='pop-wraper eiedit-block'><div class='pop' style='bottom: calc(50% - -10px);'>"+
-                    "<div class = 'triangle'></div><input class='form-control eiedit-input' type='text'>"+
-                    "<input type='button' class='btn btn-secondary btn-pop' value='ВСТАВКА'><input type='button' class='btn btn-secondary btn-pop' value='ОБНОВЛЕНИЕ'>"+
-                    "</div><span class='extraVal'>2</span></div>";
-                }
+                    $(this).addClass("input-edit");
+                    let value = $(this).text().trim();
 
-                if(!element.hasClass(eieditCssClass)){
-
-                    element.addClass(eieditCssClass);
-                    let value = element.text().trim();
-
-                    element.html(eieditElem);
-
-                    let input = element.find('.eiedit-input');
+                    $(this).html('<input class="form-control eiedit-input" type="text">');
+                    let input = $(this).find('input');
             
                     input.val(value);
 
                     input.trigger( "focus" ).val(value);
-                } 
-                      
+                }        
             },
-            hideElement: function(e) {
-                console.log(e.target);
+            hideElement: function() {
                 let element = $(this)
-
-                    let inputElement = element.parent('td').find('input.eiedit-input');
-
+                let inputElement = element.parent('td').find('input');
                     let value = inputElement.val();
-                   // console.log('input value:');
-                   // console.log(value);
                     element.parent('td').removeClass("input-edit");
-        
-                    
-                    element.parent('td').text(value);
+                    $(this).parent('td').text(value);
                     element.remove();
-
+            
             }
         };
 
+        let DrawModal = {
+            delModal: function (){
+                this.modal("Удалить","Delete!Delete!Delete!");
+            },
+            addModal: function (){
+                this.modal("Добавить","Add!Add!Add!");
+            },
+            modal: function (header = "",body = "",footer = ""){
+                let modal = `<div class='back modal-gradient'></div>
+                <div class='wrap-modal'><div class='header-modal'>`
+                    +header+
+                    `<div class='closing_cross'></div></div><div class='body-modal'>`
+                    +body+
+                    `</div><div class='footer-modal'>`
+                    +footer+    
+                    `</div></div>`;
+                $('body').append(modal);
+
+                $(document).on('click','.wrap-modal', function(e){
+                    if($(e.target).hasClass('closing_cross')){
+                        const wrapModal = $(this);
+                        const background = $(this).parent('body').find('.back');
+                        wrapModal.addClass('close-modal');
+                        background.addClass('close-back');
+                    }
+                });
+            }
+        }
+
+
+
         /**
-         * Draw Tabledit structure (identifier column, editable columns, toolbar column).
          *
          * @type {object}
          */
@@ -244,21 +210,18 @@
                     //пробегаемся по колонкам в которые заданы для редактирования в настройках
                     let inputType = 'text'; 
                     for (let i = 0; i < settings.columns.editable.length; i++) {
-
+                        info('test'+i);
                         const $td = $table.find('tbody td:nth-child(' + (parseInt(settings.columns.editable[i][0]) + 1) + ')');
 
                         inputType = settings.columns.editable[i][1];
-                       
+ 
                         //своего рода фильтр если значение андефайнд или неверно написано
                         switch (inputType) {
                             case 'checkbox':
                                 inputType = 'checkbox'; 
-                            
-                              
                               break;
                             default:
-                                inputType = 'text';
-                                
+                                inputType = 'text';  
                           }
 
                         $td.each(function(){
@@ -293,10 +256,10 @@
                                
                                 $(this).on("click focus",DrawElement.viewElement);
 
-                                $(this).parent('tr').on("focusout","td.input-edit>.eiedit-block",DrawElement.hideElement);
+                                $(this).parent('tr').on("focusout","td.input-edit > input",DrawElement.hideElement);
                             }
-                           
-
+                            info(input); 
+                            info("it's "+val);
                         });
                         
                
@@ -349,14 +312,52 @@
                       
                         })
 
-                        $(document).on('click', function(e){
+                        eieditSquere.on('click','input[type="button"]', function(){
+                            eieditSquere.find('.back,.pop').addClass('close-back');
+                        });
 
-                            if($(e.target).hasClass('back')){
-                            $('.eiedit-square').find('.pop').remove();
-                            $('.back').remove();
+                        eieditSquere.on('click','input.del', function(){
+                            DrawModal.delModal();
+                        });
+
+                        eieditSquere.on('click','input.add', function(){
+                            DrawModal.addModal();
+                        });
+
+                        $(document).on('click', function(e){
+                            let background = $(e.target);
+                            let pop = $('.pop');
+                            let wrapModal = $('.wrap-modal');
+
+                            if(background.hasClass('back')){
+                                background.addClass('close-back');
+                                if (pop.length){
+                                    pop.addClass('close-back');
+                                }
+                                if (wrapModal.length){
+                                    wrapModal.addClass('close-modal');
+                                }
+
+                            }
+                        });
+
+                        $(document).on('animationend',function(e){
+                            let background = $(e.target);
+                            let pop = $('.pop');
+                            let wrapModal = $('.wrap-modal.close-modal');
+
+                            if(background.hasClass('close-back')){
+                                background.remove();
+                                if (pop.length){
+                                    pop.remove();
+                                }
+                                if (wrapModal.length){
+                                    wrapModal.remove();
+                                }
                             }
 
                         });
+
 
                     }
                 }
@@ -365,6 +366,22 @@
 
 
         };
+
+
+        /**
+        * Формирование сообщений на ответ от сервера.
+        * showMsg(type,msg) - отображает сообщения разного типа.
+        * Четыре типа сообщений type: ок, info, warning, error.
+        * msg- отображаемое сообщение.
+        * let obj = checkAnswer() -проверка был ли вообще ответ сервера?
+        * Ждем ответа 10 секунд и в случае если ответа нет, 
+        * выводим ошибку:"Нет ответа сервера".
+        * stopChecking(obj) - отключает проверку в 
+        * случае если ответ получен.
+        * Где obj - обьект таймера.
+        * Поумолчанию все отключено.
+        * @type Object 
+        */
 
         let Messages = {
             showMsg: function(type, msg){
@@ -421,24 +438,22 @@
                         obj = setTimeout(function(){
                             Messages.showMsg('error','Нет ответа от сервера!');
                         }, settings.timeOut);
-  
+      
                     }
 
                     return obj;
-
                 },
-                stopChecking: function(e,obj) {
+                stopChecking: function(obj) {
 
                     if(settings.messageOn){ 
                         clearTimeout(obj);
-                    }
+                    }    
 
                 }
             }
         }
 
          /**
-         *
          *
          * @type object
          */
@@ -449,40 +464,37 @@
                 let data = {};
 
                 node.find('td').each(function(index){
-   
-
-                 /**
-                  * Условие для корректной отправки данных 
-                  * при добалении новой колонки с чекбоксами для удаления
-                  */
+					
+					/**
+					* Условие для корректной отправки данных 
+					* при добалении новой колонки с чекбоксами для удаления
+					*/
                     if(settings.updDelColumn){
                         if(!index){
                             return; 
                         }
                      index -= 1;
-                     console.log(index); 
                     }
-                    console.log('test');
+
                     if($(this).hasClass('text-input input-edit')){
-                        data[index]=$(this).find('input.eiedit-input').val();
+                        data['item'+index]=$(this).find('input.eiedit-input').val();
                        
                     }else if ($(this).hasClass('checkbox-input')){
                         let checkTemp = $(this).find('input.eiedit-input').is(':checked') ? 1 : 0;
-                        data[index]=checkTemp;
+                        data['item'+index]=checkTemp;
                     }else{
-                        data[index]=$(this).text().trim();
-                        
+                        data['item'+index]=$(this).text().trim();
                     }
 
                 })
                 data['action'] = 'insert';
 
-                data['tableid'] = this.getTableID();
+                data['digest'] = this.getTableID();
 
                 AjaxSender.sendData(data);
-
+                
             },
-            hideElement: function(elem) {
+			hideElement: function(elem) {
 
                 let inputElement = $(elem);
                 if(!$(inputElement).parent('td').hasClass('checkbox-input')){
@@ -493,21 +505,20 @@
                 }
             },
             getTableID: function() {
-                    const attr = $table.attr('tableid');
-                    if (typeof attr !== typeof undefined && attr !== false) {
-                        return attr;
-                    }      
-                }
- 
+                const attr = $table.attr('tableid');
+                if (typeof attr !== typeof undefined && attr !== false) {
+                    return attr;
+                }      
+            }
 
 
         };
-        
+
         let AjaxSender = {
             sendData: function(data) {
-
+                
                 const timer = Messages.checkServerAnswer.checkAnswer();
-
+  
                 fetch(settings.url,{
                     method: 'POST',
                     headers: {
@@ -516,12 +527,11 @@
                     body: JSON.stringify(data),
                 }).then((response) => response.json())
                 .then((data) => {
-        
-                        Messages.showMsg(data[0],'Данные обновлены!');
-                        Messages.checkServerAnswer.stopChecking(timer);
-        
-                });
 
+                    Messages.showMsg(data[0],'Данные обновлены!');
+                    Messages.checkServerAnswer.stopChecking(timer);
+
+                });
             }
 
         }
@@ -531,24 +541,15 @@
         Draw.columns.updDelColumn();
          
          $(document).on('keyup', function(event) {
-          
-           if(!$(event.target).hasClass('eiedit-input')){
-                return;
-           }
-
-         
+            if( !$(event.target).hasClass("eiedit-input")) return;
             switch (event.key) {
                 case "Tab":  // Tab.
-                   
-                
                     break;
-                case "Enter": // Enter
-
+                case "Enter": // Enter.
                     Edit.submit(event.target);
-                
                     break;
-                case "Escape": // Escape.
-                    Edit.hideElement(event.target);
+                case "Escape": // Escape
+					Edit.hideElement(event.target);
                     break;
             }
         });
