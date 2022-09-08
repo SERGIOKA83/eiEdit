@@ -1,23 +1,4 @@
 /*-------вертикальное меню---------*/
-table .form-control{
-    padding: 5px;
-    min-width: 60px;
-}
-
-.selected1{
-    background: #5275ff;
-}
-
-table .form-select{
-    padding: 5px;
-    min-width: 60px;
-}
-
-table tbody td{
-    vertical-align: middle;
-    min-height: 40px;
-}
-
 #verticalMenu ul li a {
 	position: relative;
 	display: block;
@@ -89,6 +70,7 @@ nav#verticalMenu,.table_options{
     border: 1px solid #584747;
     box-shadow: 4px 3px 5px gray;
 }
+
 /*------popover-------*/
 
 .pop{
@@ -97,10 +79,12 @@ nav#verticalMenu,.table_options{
     padding: 10px;
     background: #f0f0f0;
     transform: translateX(-50%);
-    left: 50%; 
+    left: 83px; 
     width: 250px;
     border-radius: 0.3rem;
     z-index: 100;
+    box-shadow: 0 12px 30px 0 rgba(0, 0, 0, 0.5);
+    animation: opacity-in-animate 0.5s ease-in-out;
 }
 
 .pop-wraper{
@@ -113,7 +97,7 @@ nav#verticalMenu,.table_options{
     width: 1rem;
     height: 0.5rem;
     transform: translate(-50%,100%);
-    left: 50%;
+    left: 23px;
     bottom: 0;
 }
 
@@ -143,10 +127,68 @@ input.btn-pop{
 }
 /*------popover-------*/
 
+.back{
+    background-color:rgb(0, 0, 0, 0.2);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99;
+    animation: opacity-in-animate 0.5s ease-in-out;
+}
+.eiedit-square{
+    position: relative;
+    text-align: center;
+}
+
+.eiedit-square >.pop{
+    width: 200px;
+}
+
+table .form-control{
+    padding: 5px;
+    min-width: 45px;
+}
+
+table .form-select{
+    padding: 5px;
+    min-width: 45px;
+}
+
+.table_options{
+    padding: 10px;
+	overflow-x: scroll;
+}
+
+.table_options > .row{
+	width:100%;
+}
+
+.table_options table.dataTable{
+    border-collapse: collapse !important;
+}
+
+.table_options table td, .table_options table th {
+    border: 1px solid #888888;
+}
+ 
+.table_options table thead th{
+    background-color: #d8d8d8;
+}
+
+.table_options table thead,
+.table_options table tbody {
+    border-top: 2px solid currentColor;
+}
+
+.table_options table tbody {
+    border-bottom: 2px solid currentColor;
+}
+
 /*extra column for insert and delete information*/
 th.eiedit-select-checkbox{
     vertical-align: middle;
-    padding: 4px;
 }
 
 td.eiedit-select-checkbox{
@@ -172,8 +214,10 @@ td.eiedit-select-checkbox:before{
     box-sizing: border-box;
 }
 
-tr.eiedit-selected {
-    box-shadow: inset 0 0 0 9999px rgb(13 181 253 / 95%);
+tr.eiedit-selected,
+tr.eiedit-selected td.text-input,
+tr.eiedit-selected td.checkbox-input{
+    box-shadow: inset 0 0 0 9999px rgb(13 181 253 / 95%) !important ;
 }
 
 tr.eiedit-selected td.eiedit-select-checkbox:after{
@@ -191,46 +235,6 @@ tr.eiedit-selected td.eiedit-select-checkbox:after{
 }
 
 /*extra column for insert and delete information*/
-.back{
-    background-color:rgb(0, 0, 0,0.3);
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 99;
-}
-.eiedit-square{
-    position: relative;
-    text-align: center;
-}
-
-.eiedit-square >.pop{
-    width: 200px;
-}
-
-.table_options{
-    padding: 10px;
-}
-
-.table_options table.dataTable{
-    border-collapse: collapse !important;
-}
-
-.table_options table td, .table_options table th {
-    border: 1px solid #888888;
-}
- 
-.table_options table thead th{
-    background-color: #d8d8d8;
-}
-.table_options table thead,
-.table_options table tbody {
-    border-top: 2px solid currentColor;
-}
-.table_options table tbody {
-    border-bottom: 2px solid currentColor;
-}
 
 h3 {
     font-size: 18px;
@@ -251,6 +255,12 @@ h3 {
 
 }
 
+table td.text-input,table td.checkbox-input{
+    border-left: 2px solid #888888;
+    border-right: 2px solid #888888;
+    background-color: aliceblue;
+}
+
 /*----Информационные оповещения----*/
 .message{
     position: fixed;
@@ -264,12 +274,12 @@ h3 {
     bottom: 60px;
     margin: 20px auto;
     padding:15px;
-    animation: bg-animate 5s linear infinite,  pos-out-animate 1s ease-in-out;
+    animation: bg-animate 5s linear infinite, pos-out-animate 0.5s ease-in-out;
 }
 
 .message span{font-weight:600;}
 
-.message #close{float:right; color:inherit; text-decoration:none;}
+.message #close{float:right; color:inherit; text-decoration:none;cursor:default;}
 
 .message#error{
     background-color:tomato;
@@ -297,7 +307,12 @@ h3 {
 
 .close{
     left: -50%;
-    animation: pos-in-animate 1s ease-in-out;
+    animation: pos-in-animate 0.5s ease-in-out;
+}
+
+.close-back{
+    animation: opacity-out-animate 0.5s ease-in-out;
+    opacity: 0; 
 }
  
 @keyframes bg-animate {
@@ -327,4 +342,108 @@ h3 {
     }
 }
 
+@keyframes opacity-in-animate {
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+
+@keyframes opacity-out-animate {
+    from {
+        opacity:1;
+    }
+    to {
+        opacity:0;
+    }
+}
+
 /*----Информационные оповещения----*/
+
+/*----Модальное окно----*/
+.wrap-modal{
+    position: fixed;
+    width: 640px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    box-shadow: 0 12px 30px 0 rgba(0, 0, 0, 0.5);
+    background-color: transparent;
+    border-radius: 6px;
+    z-index: 102;
+    animation: pos-up-animate 0.7s ease-in-out, opacity-in-animate 0.7s ease-in-out;
+}
+
+.modal-gradient{
+    background: radial-gradient(ellipse farthest-corner at center, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.7) 100%);
+}
+
+.header-modal{
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;    
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    padding: 16px 10px 2px 16px;
+}
+
+.footer-modal{
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
+    padding: 10px;
+}
+
+.footer-modal,
+.header-modal{
+    position:relative;
+    height: 52px;
+    background-color: #e8e9eb; 
+    width: 100%;
+}
+
+.body-modal{
+    padding: 10px 16px;
+    background: #fcfcfc; 
+}
+
+.close-modal{
+    animation: pos-down-animate 0.7s ease-in-out, opacity-out-animate 0.7s ease-in-out;
+}
+
+div.closing_cross{
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.closing_cross::after{
+    content: "×";
+    color: rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+    font-size: 22px;
+    font-family: "Courier New",Courier,monospace;
+}
+
+.closing_cross:hover:after{
+    color: black;
+}
+
+@keyframes pos-up-animate {
+    from {
+        top: 45%;
+    }
+    to {
+        top: 50%;
+    }
+}
+
+@keyframes pos-down-animate {
+    from {
+        top: 50%;
+    }
+    to {
+        top: 55%;
+    }
+}
+/*----Модальное окно----*/
