@@ -370,7 +370,6 @@ table td.text-input,table td.checkbox-input{
     top: 50%;
     transform: translate(-50%,-50%);
     box-shadow: 0 12px 30px 0 rgba(0, 0, 0, 0.5);
-    background-color: transparent;
     border-radius: 6px;
     z-index: 102;
     animation: pos-up-animate 0.7s ease-in-out, opacity-in-animate 0.7s ease-in-out;
@@ -409,6 +408,14 @@ table td.text-input,table td.checkbox-input{
 
 .close-modal{
     animation: pos-down-animate 0.7s ease-in-out, opacity-out-animate 0.7s ease-in-out;
+}
+
+.ei-modal-buttons{
+    text-align: right;
+}
+.ei-modal-buttons > .ei-btn-modal{
+    margin: 3px 5px 3px 5px;
+    padding: 0 5px 0 5px;
 }
 
 div.closing_cross{
