@@ -1,11 +1,11 @@
 /*!
- * EiEdit v0.0.6 
+ * EiEdit v0.1.6 
  * 2022 Kostyuchenko Sergey
  */
 
 /**
  * @description inline editor for tables. In the name of Eidelman!
- * @version 0.0.6
+ * @version 0.1.6
  * @author Kostyuchenko Sergey
  */
 
@@ -155,7 +155,28 @@
 
         let DrawModal = {
             delModal: function (){
-                this.modal("Удалить","Delete!Delete!Delete!");
+                 
+                const count = $('tbody tr.eiedit-selected').length;
+
+                let okButton = `<input type='button' class='btn btn-secondary ei-btn-modal ei-ok-btn' value='OK'>`
+                let buttons = `<div class='ei-modal-buttons'>` + (count ? okButton : '') + 
+                `<input type='button' class='btn btn-secondary ei-btn-modal ei-cancel-btn' value='Отмена'>
+                </div>`;
+
+                if(count){
+                    this.modal("Удалить","Вы уверены что хотите удалить "+count+" ряд(-а)(-ов)?",buttons);
+                }
+                else{
+                    this.modal("Удалить","Не выбраны ряды. Нечего удалять.",buttons);
+                }
+                
+                let wrapModal = $('.wrap-modal'); 
+
+                wrapModal.on('click','.ei-modal-buttons > .ei-ok-btn', function(e){
+                    DrawModal.hideModal();
+                    //I will create and add class for deleting rows
+                });
+
             },
             addModal: function (){
                 this.modal("Добавить","Add!Add!Add!");
@@ -171,14 +192,21 @@
                     `</div></div>`;
                 $('body').append(modal);
 
-                $(document).on('click','.wrap-modal', function(e){
-                    if($(e.target).hasClass('closing_cross')){
-                        const wrapModal = $(this);
-                        const background = $(this).parent('body').find('.back');
-                        wrapModal.addClass('close-modal');
-                        background.addClass('close-back');
-                    }
+                let wrapModal = $('.wrap-modal');
+
+                wrapModal.on('click','.closing_cross', function(e){
+                    DrawModal.hideModal();
                 });
+
+                wrapModal.on('click','.ei-cancel-btn', function(e){
+                    DrawModal.hideModal();
+                });
+            },
+            hideModal: function(){
+                const wrapModal = $('.wrap-modal');
+                const background = wrapModal.parent('body').find('.back');
+                background.addClass('close-back');
+                wrapModal.addClass('close-modal');
             }
         }
 
@@ -324,41 +352,6 @@
                             DrawModal.addModal();
                         });
 
-                        $(document).on('click', function(e){
-                            let background = $(e.target);
-                            let pop = $('.pop');
-                            let wrapModal = $('.wrap-modal');
-
-                            if(background.hasClass('back')){
-                                background.addClass('close-back');
-                                if (pop.length){
-                                    pop.addClass('close-back');
-                                }
-                                if (wrapModal.length){
-                                    wrapModal.addClass('close-modal');
-                                }
-
-                            }
-                        });
-
-                        $(document).on('animationend',function(e){
-                            let background = $(e.target);
-                            let pop = $('.pop');
-                            let wrapModal = $('.wrap-modal.close-modal');
-
-                            if(background.hasClass('close-back')){
-                                background.remove();
-                                if (pop.length){
-                                    pop.remove();
-                                }
-                                if (wrapModal.length){
-                                    wrapModal.remove();
-                                }
-                            }
-
-                        });
-
-
                     }
                 }
 
@@ -367,6 +360,63 @@
 
         };
 
+        let DocumentEvents = {
+            events: function(){
+                $(document).on('click', function(e){
+                    let background = $(e.target);
+                    let pop = $('.pop');
+
+                    if(background.hasClass('back')){
+                        background.addClass('close-back');
+                        if (pop.length){
+                            pop.addClass('close-back');
+                        }
+                    }
+                });
+
+                $(document).on('animationend',function(e){
+                    let background = $(e.target);
+                    let pop = $('.pop');
+
+                    if(background.hasClass('close-back')){
+                        background.remove();
+                        if (pop.length){
+                            pop.remove();
+                        }
+                    }
+               });
+
+               $(document).on('click', function(e){
+                    console.log('back test');
+                    let background = $(e.target);
+                    let wrapModal = $('.wrap-modal');
+
+                    if(background.hasClass('back')){
+                    background.addClass('close-back');
+
+                        if (wrapModal.length){
+                            wrapModal.addClass('close-modal');
+                        }
+
+                    }
+                });
+
+                $(document).on('animationend',function(e){
+                    let background = $(e.target);
+
+                    let wrapModal = $('.wrap-modal.close-modal');
+
+                    if(background.hasClass('close-back')){
+                        background.remove();
+
+                        if (wrapModal.length){
+                            wrapModal.remove();
+                        }
+                    }
+
+                });
+            }
+        }
 
         /**
         * Формирование сообщений на ответ от сервера.
@@ -538,6 +588,7 @@
 
         Draw.columns.identifier();
         Draw.columns.editable();
+        DocumentEvents.events();
         Draw.columns.updDelColumn();
          
          $(document).on('keyup', function(event) {
