@@ -142,6 +142,15 @@ input.btn-pop{
     text-align: center;
 }
 
+.eiedit-square > .fa{
+    cursor: pointer;
+    color: #626161;
+}
+
+.eiedit-square > .fa:hover{
+    color: black;
+}
+
 .eiedit-square >.pop{
     width: 200px;
 }
@@ -424,12 +433,14 @@ div.closing_cross{
     top: 50%;
     transform: translateY(-50%);
 }
+
 .closing_cross::after{
     content: "×";
     color: rgba(0, 0, 0, 0.5);
     font-weight: bold;
     font-size: 22px;
     font-family: "Courier New",Courier,monospace;
+    cursor: pointer;
 }
 
 .closing_cross:hover:after{
