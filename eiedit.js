@@ -175,6 +175,9 @@
                 wrapModal.on('click','.ei-modal-buttons > .ei-ok-btn', function(e){
                     DrawModal.hideModal();
                     //I will create and add class for deleting rows
+
+                    Delete.submit();
+                    
                 });
 
             },
@@ -292,8 +295,22 @@
                         
                
                     }
-                },
-                updDelColumn: function() {
+                }
+                
+
+            }
+
+
+        };
+
+        let Service = {
+            getTableID: function() {
+                const attr = $table.attr('tableid');
+                if (typeof attr !== typeof undefined && attr !== false) {
+                    return attr;
+                }      
+            },
+            updDelColumn: function() {
                     if(settings.updDelColumn){
                         let eieditHead = $table.find("thead tr");
                         let eieditBody = $table.find("tbody tr");
@@ -354,11 +371,7 @@
 
                     }
                 }
-
-            }
-
-
-        };
+        }
 
         let DocumentEvents = {
             events: function(){
@@ -387,7 +400,6 @@
                });
 
                $(document).on('click', function(e){
-                    console.log('back test');
                     let background = $(e.target);
                     let wrapModal = $('.wrap-modal');
 
@@ -412,6 +424,8 @@
                         if (wrapModal.length){
                             wrapModal.remove();
                         }
+
+                        
                     }
 
                 });
@@ -434,7 +448,7 @@
         */
 
         let Messages = {
-            showMsg: function(type, msg){
+            showMsg: function(type, msg, reload = false){
                 if(settings.messageOn){  
                     switch (type) {
                         case 'ok ':
@@ -469,6 +483,9 @@
                         let elem = $(this);
                             if (elem.hasClass('close')) {
                                 elem.remove();
+                                if (reload){
+                                    location.reload();
+                                }
                             }
                             else{
                             setTimeout(function(){
@@ -507,8 +524,8 @@
          *
          * @type object
          */
-          let Edit = {
-             submit: function(td) {
+        let Edit = {
+            submit: function(td) {
 
                 let node = $(td).parent('td').parent('tr');
                 let data = {};
@@ -539,9 +556,7 @@
                 })
                 data['action'] = 'insert';
 
-                data['digest'] = this.getTableID();
-
-                AjaxSender.sendData(data);
+                Sender.sendData(data);
                 
             },
 			hideElement: function(elem) {
@@ -553,19 +568,28 @@
                     inputElement.parent('td').text(value);
                     inputElement.remove();
                 }
-            },
-            getTableID: function() {
-                const attr = $table.attr('tableid');
-                if (typeof attr !== typeof undefined && attr !== false) {
-                    return attr;
-                }      
+            }   
+        };
+
+
+        let Delete = {
+            submit: function() {
+
+                let data = {};
+                $('table > tbody > tr.eiedit-selected').each(function(rowIndex){
+                    data['id'+rowIndex] = $(this).attr(settings.rowIdentifier);
+                });
+                data['action'] = 'delete';
+                Sender.sendData(data);
+
             }
 
 
         };
 
-        let AjaxSender = {
+        let Sender = {
             sendData: function(data) {
+                data['digest'] = Service.getTableID();
                 
                 const timer = Messages.checkServerAnswer.checkAnswer();
   
@@ -589,7 +613,7 @@
         Draw.columns.identifier();
         Draw.columns.editable();
         DocumentEvents.events();
-        Draw.columns.updDelColumn();
+        Service.updDelColumn();
          
          $(document).on('keyup', function(event) {
             if( !$(event.target).hasClass("eiedit-input")) return;
