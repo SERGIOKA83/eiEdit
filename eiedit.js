@@ -1,11 +1,11 @@
 /*!
- * EiEdit v0.1.6 
+ * EiEdit v0.1.7 
  * 2022 Kostyuchenko Sergey
  */
 
 /**
  * @description inline editor for tables. In the name of Eidelman!
- * @version 0.1.6
+ * @version 0.1.7
  * @author Kostyuchenko Sergey
  */
 
@@ -25,13 +25,14 @@
 
         const $table = this;
 
-          /**
+        /**
          * Объединение конфигурационных настроек поумолчанию 
          * и заданных при инициализации плагина. 
          * При совпадении заданные при инициализации плагина 
          * перекрывают заданные поумолчанию. 
          */
         const settings = $.extend( {
+
              /**
              * Вывод отладочной информации в консоль.
              * Поумолчанию отключено.
@@ -41,7 +42,48 @@
              */
             debug: false,
 
-             /**
+            /**
+             * Поля ввода при добавлении нового ряда в таблице.
+             * Поумолчанию пытается взять информацию из editable о том
+             * какие инпуты использовать для ввода нового ряда в таблице.
+             * Названия полей пытается взять из шапки.
+             * В случае необходимости можно сконфигурировать вручную:
+             * fields: [
+             * { label: 'First name', name: 'first_name' },
+             * { label: 'Last name',  name: 'last_name'  },
+             * //etc
+             * ]
+             * @property fields
+             * @type array
+             * 
+             */
+            fields: [],
+
+            /**
+             * Указываем номер колонки с id таблицы и его название, 
+             * которое будет атрибутом ряда.
+             * idColumn - номер столбца с id
+             * idName - название атрибута
+             * Поумолчаннию название 'id'.
+             * @property identifier
+             * @type object
+             *
+             */
+              identifier: {idColumn: 0, idName: 'id'},
+
+            /**
+             * Редактируемые столбцы.
+             * editable: [ [4],[5,'checkbox']]
+             * где 4,5 - номер столбца. checkbox - тип 
+             * поля ввода, вместо текстового ввода появится чекбокс. 
+             * Поумолчанию не один не редактируется.
+             * @property editable
+             * @type array
+             * 
+             */
+            editable: [],
+
+            /**
              * Прячет столбец с id.
              * Поумолчанию id отображается.
              * @property hideIdentifier
@@ -51,15 +93,6 @@
             hideIdentifier: false,
 
             /**
-             * Название аттрибута с значением идентификатора для кортежа.
-             * Поумолчаннию название 'id'.
-             * @property rowIdentifier
-             * @type string
-             *
-             */
-            rowIdentifier: 'id',
-
-              /**
              * Путь по которому стучимся на бэкэнд.
              * Поумолчанию стучится на текущую страницу.
              * @property url
@@ -95,7 +128,7 @@
              * @type ineger
              * 
              */
-              timeOut:6000,
+            timeOut:6000,
 
               /**
              * Время на которое будет появляться собщение.
@@ -122,12 +155,14 @@
         info('Переданные параметры:');
         info(options);
 
+      
+
           /**
          * 
          *
          * @type object
          */
-           let DrawElement = {
+        let DrawElement = {
             viewElement: function() {
                 if(!$(this).hasClass("input-edit")){
 
@@ -224,27 +259,27 @@
                 identifier: function() {
                     // Прячем колонку id.
                     if (settings.hideIdentifier) {
-                        $table.find('th:nth-child(' + parseInt(settings.columns.identifier[0]) + 1 + '), tbody td:nth-child(' + parseInt(settings.columns.identifier[0]) + 1 + 
-                        '), tfoot td:nth-child(' + parseInt(settings.columns.identifier[0]) + 1 + ')').hide();
+                        $table.find('th:nth-child(' + parseInt(settings.identifier.idColumn) + 1 + '), tbody td:nth-child(' + parseInt(settings.identifier.idColumn) + 1 + 
+                        '), tfoot td:nth-child(' + parseInt(settings.identifier.idColumn) + 1 + ')').hide();
                     }
 
-                    const $td = $table.find('tbody td:nth-child(' + (parseInt(settings.columns.identifier[0]) + 1) + ')');
+                    const $td = $table.find('tbody td:nth-child(' + (parseInt(settings.identifier.idColumn) + 1) + ')');
 
                     //цикл для работы с столбцом идентификатора
                     $td.each(function() {
                         // добавление к tr аттрибута с значением равным "id".
-                        $(this).parent('tr').attr(settings.rowIdentifier, $(this).text().trim());
+                        $(this).parent('tr').attr(settings.identifier.idName, $(this).text().trim());
                      });
                 },
                 editable: function() {
-                    info('количество редактируемых столбцов: '+settings.columns.editable.length);
+                    info('количество редактируемых столбцов: '+settings.editable.length);
                     //пробегаемся по колонкам в которые заданы для редактирования в настройках
                     let inputType = 'text'; 
-                    for (let i = 0; i < settings.columns.editable.length; i++) {
+                    for (let i = 0; i < settings.editable.length; i++) {
                         info('test'+i);
-                        const $td = $table.find('tbody td:nth-child(' + (parseInt(settings.columns.editable[i][0]) + 1) + ')');
+                        const $td = $table.find('tbody td:nth-child(' + (parseInt(settings.editable[i].column) + 1) + ')');
 
-                        inputType = settings.columns.editable[i][1];
+                        inputType = settings.editable[i].type;
  
                         //своего рода фильтр если значение андефайнд или неверно написано
                         switch (inputType) {
@@ -574,13 +609,29 @@
 
         let Delete = {
             submit: function() {
-
                 let data = {};
                 $('table > tbody > tr.eiedit-selected').each(function(rowIndex){
-                    data['id'+rowIndex] = $(this).attr(settings.rowIdentifier);
+                    data['id'+rowIndex] = $(this).attr(settings.identifier.idName);
                 });
                 data['action'] = 'delete';
                 Sender.sendData(data);
+
+            }
+
+
+        };
+
+        let Add = {
+            submit: function() {
+
+                let data = {};
+                if(settings.fields.length){
+                }
+                // $('table > tbody > tr.eiedit-selected').each(function(rowIndex){
+                //     data['id'+rowIndex] = $(this).attr(settings.rowIdentifier);
+                // });
+                // data['action'] = 'delete';
+                // Sender.sendData(data);
 
             }
 
