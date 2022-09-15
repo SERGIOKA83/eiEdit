@@ -1,11 +1,11 @@
 /*!
- * EiEdit v0.1.7 
+ * EiEdit v1.0.0 
  * 2022 Kostyuchenko Sergey
  */
 
 /**
  * @description inline editor for tables. In the name of Eidelman!
- * @version 0.1.7
+ * @version 1.0.0
  * @author Kostyuchenko Sergey
  */
 
@@ -24,6 +24,8 @@
         }
 
         const $table = this;
+
+        $table.addClass('eiedit');
 
         /**
          * Объединение конфигурационных настроек поумолчанию 
@@ -49,8 +51,8 @@
              * Названия полей пытается взять из шапки.
              * В случае необходимости можно сконфигурировать вручную:
              * fields: [
-             * { label: 'First name', name: 'first_name' },
-             * { label: 'Last name',  name: 'last_name'  },
+             * { label: 'First name', column: 4 },
+             * { label: 'Last name',  column: 5 },
              * //etc
              * ]
              * @property fields
@@ -73,9 +75,13 @@
 
             /**
              * Редактируемые столбцы.
-             * editable: [ [4],[5,'checkbox']]
-             * где 4,5 - номер столбца. checkbox - тип 
-             * поля ввода, вместо текстового ввода появится чекбокс. 
+             * editable: [
+             *  {column: 4},
+             *  {column: 5, type: 'checkbox'}
+             * ]
+             * где column - номер столбца. type - тип 
+             * поля ввода, если пусто, то простой текстовый инпут.
+             * type: 'checkbox' - вместо текстового ввода появится чекбокс. 
              * Поумолчанию не один не редактируется.
              * @property editable
              * @type array
@@ -208,8 +214,8 @@
                 let wrapModal = $('.wrap-modal'); 
 
                 wrapModal.on('click','.ei-modal-buttons > .ei-ok-btn', function(e){
+
                     DrawModal.hideModal();
-                    //I will create and add class for deleting rows
 
                     Delete.submit();
                     
@@ -217,7 +223,97 @@
 
             },
             addModal: function (){
-                this.modal("Добавить","Add!Add!Add!");
+                let form = '<div class="modal-form">';
+                let labelsInput;
+                let inputType;
+                let okButton = `<input type='button' class='btn btn-secondary ei-btn-modal ei-ok-btn' value='OK'>`
+               
+   
+                if(settings.fields.length){
+                    for (let i = 0; i < settings.fields.length; i++) {
+                            inputType = settings.editable[i];
+                            if(typeof inputType == "undefined"){
+                                inputType ="";
+                            }else{
+                                inputType = inputType.type;    
+                            }
+
+                            switch (inputType) {
+                                case 'checkbox':
+                                    labelsInput = "<span><input type='checkbox' id='"+settings.fields[i].column+"'></span>"; 
+                                break;
+                                default:
+                                    labelsInput = "<input class='form-control' type='text' id='"+settings.fields[i].column+"'>";
+                            }   
+                            
+                            form += "<div><label for='"+settings.fields[i].column+"'>"+settings.fields[i].label+"</label>"+labelsInput+"</div>";
+                    }
+
+                }
+                else{
+                    if(settings.editable.length){
+                        const tr = $table.find('thead tr');
+                        let i = 0;
+                        let str = "";
+                        
+                        tr.each(function(){
+                            if(i>=settings.editable.length){
+                                return false;
+                            }else{
+                                i=0;
+                            }
+                            
+                            for (; i < settings.editable.length; i++) {
+                               str = $(this).find('th:nth-child(' + (parseInt(settings.editable[i].column) + 2) + ')').text().trim();
+                               if(str == ''){
+                                    break;
+                               }
+
+                               inputType = settings.editable[i].type;
+                               switch (inputType) {
+                                case 'checkbox':
+                                    labelsInput = "<span><input type='checkbox' id='"+settings.editable[i].column+"'></span>"; 
+                                  break;
+                                default:
+                                    labelsInput = "<input class='form-control' type='text' id='"+settings.editable[i].column+"'>";
+                                    
+                              }
+
+                               form += "<div><label for='"+settings.editable[i].column+"'>"+str+"</label>"+labelsInput+"</div>";
+                            
+                            }
+                            
+                        });
+
+                        
+                    }
+                    else{
+
+                        okButton = "";
+                        form = "<strong>Отсутствуют редактируемые поля.<br>Проверьте настройки плагина.</strong>";
+
+                    }
+
+
+                }
+              
+                form += '</div>';
+
+                let buttons = `<div class='ei-modal-buttons'>` +okButton+ 
+                                `<input type='button' class='btn btn-secondary ei-btn-modal ei-cancel-btn' value='Отмена'>
+                                </div>`;
+
+                this.modal("Добавить",form,buttons);
+
+                let wrapModal = $('.wrap-modal'); 
+
+                wrapModal.on('click','.ei-modal-buttons > .ei-ok-btn', function(){
+
+                    Add.submit();
+
+                    DrawModal.hideModal();
+
+                });
             },
             modal: function (header = "",body = "",footer = ""){
                 let modal = `<div class='back modal-gradient'></div>
@@ -247,8 +343,6 @@
                 wrapModal.addClass('close-modal');
             }
         }
-
-
 
         /**
          *
@@ -300,7 +394,7 @@
 
                             if(inputType === 'checkbox'){
                                 //инпут типа чекбокс
-                                
+
                                 $(this).addClass("checkbox-input"); 
                                 
                                 val = Boolean(parseInt(val));
@@ -457,6 +551,7 @@
                         background.remove();
 
                         if (wrapModal.length){
+                            console.log('modal removed!');
                             wrapModal.remove();
                         }
 
@@ -575,7 +670,7 @@
                         if(!index){
                             return; 
                         }
-                     index -= 1;
+                        index -= 1;
                     }
 
                     if($(this).hasClass('text-input input-edit')){
@@ -589,7 +684,7 @@
                     }
 
                 })
-                data['action'] = 'insert';
+                data['action'] = 'update';
 
                 Sender.sendData(data);
                 
@@ -610,7 +705,7 @@
         let Delete = {
             submit: function() {
                 let data = {};
-                $('table > tbody > tr.eiedit-selected').each(function(rowIndex){
+                $($table).find('tbody > tr.eiedit-selected').each(function(rowIndex){
                     data['id'+rowIndex] = $(this).attr(settings.identifier.idName);
                 });
                 data['action'] = 'delete';
@@ -625,13 +720,23 @@
             submit: function() {
 
                 let data = {};
-                if(settings.fields.length){
-                }
-                // $('table > tbody > tr.eiedit-selected').each(function(rowIndex){
-                //     data['id'+rowIndex] = $(this).attr(settings.rowIdentifier);
-                // });
-                // data['action'] = 'delete';
-                // Sender.sendData(data);
+
+                $('.wrap-modal .modal-form > div').each(function(){
+                    let input = $(this).find('input');
+                    let value = 0;
+                    switch (input.attr('type')) {
+                        case 'checkbox':
+                            value = input.is(':checked')?1:0;
+                        break;
+                        default:
+                            value = input.val();
+                    }
+                    data['item'+(input.attr('id'))] = value;
+                });
+
+                data['action'] = 'insert';
+                console.log(data);
+                Sender.sendData(data);
 
             }
 
@@ -657,6 +762,7 @@
                     Messages.checkServerAnswer.stopChecking(timer);
 
                 });
+
             }
 
         }
