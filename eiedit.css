@@ -1,0 +1,376 @@
+/*------popover-------*/
+
+.pop{
+    position: absolute;
+    border: 1px solid black;
+    padding: 10px;
+    background: #f0f0f0;
+    transform: translateX(-50%);
+    left: 83px; 
+    width: 250px;
+    border-radius: 0.3rem;
+    z-index: 100;
+    box-shadow: 0 12px 30px 0 rgba(0, 0, 0, 0.5);
+    animation: opacity-in-animate 0.5s ease-in-out;
+}
+
+.pop-wraper{
+    position: relative;
+}
+
+.triangle{
+    position: absolute;
+    display: block;
+    width: 1rem;
+    height: 0.5rem;
+    transform: translate(-50%,100%);
+    left: 23px;
+    bottom: 0;
+}
+
+.triangle::after,
+.triangle::before{
+    position: absolute;
+    display: block;
+    content: "";
+    border-color: transparent;
+    border-style: solid;
+    border-width: 0.5rem 0.5rem 0;
+}
+
+.triangle::before{
+    bottom: 0;
+    border-top-color: rgba(0,0,0,1);
+
+}
+.triangle::after{
+    bottom: 1px;
+    border-top-color: #f0f0f0;   
+}
+
+input.btn-pop{
+    margin: 10px 5px 10px 5px;
+    padding: 0 5px 0 5px;
+}
+/*------popover-------*/
+
+/*extra column for insert and delete information*/
+.eiedit-square{
+    position: relative;
+    text-align: center;
+}
+
+.eiedit-square > .fa{
+    cursor: pointer;
+    color: #626161;
+}
+
+.eiedit-square > .fa:hover{
+    color: black;
+}
+
+.eiedit-square >.pop{
+    width: 200px;
+}
+
+th.eiedit-select-checkbox{
+    vertical-align: middle;
+}
+
+td.eiedit-select-checkbox{
+    position: relative;
+}
+
+td.eiedit-select-checkbox:before{
+    content: " ";
+    margin-top: -6px;
+    margin-left: -6px;
+    border: 1px solid black;
+    border-radius: 3px;
+}
+
+td.eiedit-select-checkbox:after,
+td.eiedit-select-checkbox:before{    
+    position: absolute;
+    top: 1.2em;
+    left: 50%;
+    display: block;
+    width: 12px;
+    height: 12px;
+    box-sizing: border-box;
+}
+
+tr.eiedit-selected,
+tr.eiedit-selected td.text-input,
+tr.eiedit-selected td.checkbox-input{
+    box-shadow: inset 0 0 0 9999px rgb(13 181 253 / 95%) !important ;
+}
+
+tr.eiedit-selected td.eiedit-select-checkbox:after{
+    content: "✓";
+    font-size: 20px;
+    margin-top: -24px;
+    margin-left: -6px;
+    text-align: center;
+    text-shadow: 1px 1px #b0bed9, -1px -1px #b0bed9, 1px -1px #b0bed9, -1px 1px #b0bed9;
+
+}
+
+.eiedit-select-checkbox{
+    width: 15px;
+}
+
+/*extra column for insert and delete information*/
+
+/*----Информационные оповещения----*/
+.message{
+    position: fixed;
+    background-size: 40px 40px;
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, .05) 25%, transparent 25%, 
+    transparent 50%, rgba(255, 255, 255, .05) 50%, rgba(255, 255, 255, .05) 75%,
+    transparent 75%, transparent);
+    box-shadow: 0 0 8px rgba(0,0,0,.3);        
+    font:16px 'Open Sans';
+    width: 50%;
+    bottom: 60px;
+    margin: 20px auto;
+    padding:15px;
+    animation: bg-animate 5s linear infinite, pos-out-animate 0.5s ease-in-out;
+}
+
+.message span{
+    font-weight:600;
+}
+
+.message #close{
+    float:right;
+    color:inherit;
+    text-decoration:none;
+    cursor:pointer;
+}
+
+.message#error{
+    background-color:tomato;
+    border-left:7px #dc3d21 solid;
+    color:white;
+}
+ 
+.message#warning{
+    background-color: #eaaf51;
+    border-left:7px #df8b00 solid;
+    color:#6b6d31;
+}
+ 
+.message#info{
+    background-color: #4ea5cd;
+    border-left:7px #3b8eb5 solid;
+    color:#beecfc;
+}
+ 
+.message#success{
+    background-color: #61b832;
+    border-left:7px #55a12c solid;
+    color:#296829;
+}
+
+.back{
+    background-color:rgb(0, 0, 0, 0.2);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99;
+    animation: opacity-in-animate 0.5s ease-in-out;
+}
+
+.close{
+    left: -50%;
+    animation: pos-in-animate 0.5s ease-in-out;
+}
+
+.close-back{
+    animation: opacity-out-animate 0.5s ease-in-out;
+    opacity: 0; 
+}
+ 
+@keyframes bg-animate {
+    from {
+        background-position: 0 0;
+    }
+    to {
+       background-position: -80px 0;
+    }
+}
+
+@keyframes pos-out-animate {
+    from {
+        left: -50%;
+    }
+    to {
+        left: 0;
+    }
+}
+
+@keyframes pos-in-animate {
+    from {
+        left: 0;
+    }
+    to {
+        left: -50%;
+    }
+}
+
+@keyframes opacity-in-animate {
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+
+@keyframes opacity-out-animate {
+    from {
+        opacity:1;
+    }
+    to {
+        opacity:0;
+    }
+}
+
+/*----Информационные оповещения----*/
+
+/*----Модальное окно----*/
+.wrap-modal{
+    position: fixed;
+    width: 640px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    box-shadow: 0 12px 30px 0 rgba(0, 0, 0, 0.5);
+    border-radius: 6px;
+    z-index: 102;
+    animation: pos-up-animate 0.7s ease-in-out, opacity-in-animate 0.7s ease-in-out;
+}
+
+.modal-gradient{
+    background: radial-gradient(ellipse farthest-corner at center, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.7) 100%);
+}
+
+.header-modal{
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;    
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    padding: 16px 10px 2px 16px;
+}
+
+.footer-modal{
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
+    padding: 10px;
+}
+
+.footer-modal,
+.header-modal{
+    position:relative;
+    height: 52px;
+    background-color: #e8e9eb; 
+    width: 100%;
+}
+
+.body-modal{
+    padding: 10px 16px;
+    background: #fcfcfc; 
+}
+
+.body-modal .modal-form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.body-modal .modal-form span{
+    width: 200px;
+}
+
+.body-modal .modal-form input{
+    display:inline-block;
+}
+
+.body-modal .modal-form input[ type=text ]{
+    width: 200px;
+    height: 35px;
+}
+
+.body-modal .modal-form label{
+    margin-right: 10px;
+    width: 200px;
+    display: inline-block;
+}
+
+.body-modal .modal-form div{
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.close-modal{
+    animation: pos-down-animate 0.7s ease-in-out, opacity-out-animate 0.7s ease-in-out;
+}
+
+.ei-modal-buttons{
+    text-align: right;
+}
+.ei-modal-buttons > .ei-btn-modal{
+    margin: 3px 5px 3px 5px;
+    padding: 0 5px 0 5px;
+}
+
+div.closing_cross{
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.closing_cross::after{
+    content: "×";
+    color: rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+    font-size: 22px;
+    font-family: "Courier New",Courier,monospace;
+    cursor: pointer;
+}
+
+.closing_cross:hover:after{
+    color: black;
+}
+
+@keyframes pos-up-animate {
+    from {
+        top: 45%;
+    }
+    to {
+        top: 50%;
+    }
+}
+
+@keyframes pos-down-animate {
+    from {
+        top: 50%;
+    }
+    to {
+        top: 55%;
+    }
+}
+/*----Модальное окно----*/
+
+table.eiedit td.text-input,table.eiedit td.checkbox-input{
+    border-left: 2px solid #888888;
+    border-right: 2px solid #888888;
+    background-color: aliceblue;
+}
