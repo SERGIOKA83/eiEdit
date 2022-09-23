@@ -101,8 +101,7 @@ td.eiedit-select-checkbox:before{
 }
 
 tr.eiedit-selected,
-tr.eiedit-selected td.text-input,
-tr.eiedit-selected td.checkbox-input{
+tr.eiedit-selected td.eiedit-editable{
     box-shadow: inset 0 0 0 9999px rgb(13 181 253 / 95%) !important ;
 }
 
@@ -192,51 +191,6 @@ tr.eiedit-selected td.eiedit-select-checkbox:after{
 .close-back{
     animation: opacity-out-animate 0.5s ease-in-out;
     opacity: 0; 
-}
- 
-@keyframes bg-animate {
-    from {
-        background-position: 0 0;
-    }
-    to {
-       background-position: -80px 0;
-    }
-}
-
-@keyframes pos-out-animate {
-    from {
-        left: -50%;
-    }
-    to {
-        left: 0;
-    }
-}
-
-@keyframes pos-in-animate {
-    from {
-        left: 0;
-    }
-    to {
-        left: -50%;
-    }
-}
-
-@keyframes opacity-in-animate {
-    from {
-        opacity:0;
-    }
-    to {
-        opacity:1;
-    }
-}
-
-@keyframes opacity-out-animate {
-    from {
-        opacity:1;
-    }
-    to {
-        opacity:0;
-    }
 }
 
 /*----Информационные оповещения----*/
@@ -369,8 +323,139 @@ div.closing_cross{
 }
 /*----Модальное окно----*/
 
-table.eiedit td.text-input,table.eiedit td.checkbox-input{
+table.eiedit td.eiedit-editable{
     border-left: 2px solid #888888;
     border-right: 2px solid #888888;
     background-color: aliceblue;
+}
+table.eiedit td.eiedit-editable:not(.checkbox-input){
+    cursor: pointer;
+}
+
+/*------группы колонок-------*/
+.eimask{
+    position: absolute;
+    top: 0; 
+    left: 0;
+    right: 0;
+    z-index: 100;
+    height: 100%;
+    opacity: 0.2;
+}
+
+.eimask.eigroup{
+    animation: group-in-opacity-animate 0.5s ease-in-out; 
+}
+
+.eigroup-msg.eigroup{
+    animation: opacity-in-animate 0.5s ease-in-out;
+}
+
+.eimask:not(.eigroup)
+{
+    animation: group-out-opacity-animate 0.5s ease-in-out;  */
+}
+
+.eigroup-msg:not(.eigroup){
+    animation: opacity-out-animate 0.5s ease-in-out;
+}
+
+.eiposition{
+    position: relative;
+}
+
+.eigroup-msg{
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 30%;
+    min-height: 50px;
+    opacity: 1;
+    border: 1px solid #888888;
+    border-radius: 0.5rem;
+    text-align: center;
+    z-index: 100;
+    font-size: 25px;
+    font-weight: bold;
+    display:inline-block;
+    padding: 3px 15px;
+    background-color: #dadada;
+
+}
+
+.eigroup-msg > div{
+    opacity: 0.3;
+    border-radius: 0.5rem;
+    position: absolute;
+    top: 0; 
+    left: 0;
+    right: 0;
+    height: 100%;
+    border: 1px solid #0330b4;
+}
+
+@keyframes group-in-opacity-animate {
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:0.2;
+    }
+}
+
+@keyframes group-out-opacity-animate {
+    from {
+        opacity:0.2;
+    }
+    to {
+        opacity:0;
+    }
+}
+
+/*------группы колонок-------*/
+
+@keyframes bg-animate {
+    from {
+        background-position: 0 0;
+    }
+    to {
+       background-position: -80px 0;
+    }
+}
+
+@keyframes pos-out-animate {
+    from {
+        left: -50%;
+    }
+    to {
+        left: 0;
+    }
+}
+
+@keyframes pos-in-animate {
+    from {
+        left: 0;
+    }
+    to {
+        left: -50%;
+    }
+}
+
+@keyframes opacity-in-animate {
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+
+@keyframes opacity-out-animate {
+    from {
+        opacity:1;
+    }
+    to {
+        opacity:0;
+    }
 }
