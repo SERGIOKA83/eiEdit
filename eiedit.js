@@ -1,11 +1,11 @@
 /*!
- * EiEdit v1.0.0 
+ * EiEdit v1.1.0 
  * 2022 Kostyuchenko Sergey
  */
 
 /**
- * @description inline editor for tables. In the name of Eidelman!
- * @version 1.0.0
+ * @description inline editor for tables.
+ * @version 1.1.0
  * @author Kostyuchenko Sergey
  */
 
@@ -90,6 +90,23 @@
             editable: [],
 
             /**
+             * Выделение столбцов в общую группу с выделением цветом 
+             * при наведении на шапке
+             * groupHilight: [
+             *  {columns: [1,4,6], color: 'green', msg: 'Group with common sense'},
+             *  {columns: [5], color: '#123456', msg: 'Оne column per group'}
+             * ]
+             * где columns - Столбцы объединенные в общую группу. 
+             * color - цвет группы при наведении на шапку.
+             * msg - сообщение отображающееся при наведении на шапку. 
+             * Поумолчанию не один не редактируется.
+             * @property groupHilight
+             * @type array
+             * 
+             */
+             groupHilight: [],
+
+            /**
              * Прячет столбец с id.
              * Поумолчанию id отображается.
              * @property hideIdentifier
@@ -121,12 +138,12 @@
              * Смотреть Messages.showMsg(type,msg);
              * Четыре типа сообщений type: ок, info, warning, error.
              * msg- отображаемое сообщение.
-             * Поумолчанию отключено.
+             * Поумолчанию включено.
              * @property messageOn
              * @type boolean
              * 
              */
-            messageOn:false,
+            messageOn:true,
             
              /**
              * Время через которое появляется ошибка: "Нет ответа от сервера"
@@ -134,7 +151,7 @@
              * @type ineger
              * 
              */
-            timeOut:6000,
+            timeOut:20000,
 
               /**
              * Время на которое будет появляться собщение.
@@ -194,6 +211,11 @@
             }
         };
 
+        /**
+         * Объект для отображения модальных окон при добавлении нового ряда 
+         * в таблице или при удалении рядов
+         * @type object
+         */
         let DrawModal = {
             delModal: function (){
                  
@@ -344,9 +366,84 @@
             }
         }
 
+         /**
+         * Объект который формирует подсветку группированных столбцов
+         * при наведениии мыши на шапке
+         * @type object
+         */
+        let DrawGroups = {
+            grouping: function(event,context,callback){
+
+                const num = $(context).index();
+                const set = settings.groupHilight;
+
+                set.forEach((item, i) => {
+                    let columns = item.columns;
+                    
+
+
+                    if(columns.indexOf(num) != -1) {
+
+
+                        let color = item.color;
+                        let msg = item.msg;
+
+                        let msgWindow = $("div.eigroup-msg.gr"+i);
+
+                        console.log(event);
+                        if(msgWindow.length && event === "mouseleave"){
+
+                                msgWindow.removeClass('eigroup');
+                                
+                                msgWindow.on('animationend',function(){
+                                    $(this).remove();
+                                });
+    
+                            
+                        }else{
+                       
+
+                            $('body').append("<div class='eigroup-msg eigroup gr"+i+"'><div style='background-color:"+color+"'></div>"+msg+"</div>");
+                        }
+                           
+                        columns.forEach((item) => {
+                            callback(item,color);
+                        });
+                   }
+                  });
+            },
+            viewGroup: function(e){
+
+                DrawGroups.grouping(e.type,this,(item,color)=>{
+                    const cells = $table.find("th:nth-child("+(item+1)+"),td:nth-child("+(item+1)+")");
+                    cells.addClass('eiposition');
+                    cells.append("<div class='eimask eigroup' style='background-color:"+color+"'></div>");
+                    
+                });
+            },
+            hideGroup: function(e) {
+
+                DrawGroups.grouping(e.type,this,(item,color)=>{
+                    const cells = $table.find("th:nth-child("+(item+1)+"),td:nth-child("+(item+1)+")");
+                    cells.each(function(){
+                        const cell = $(this);
+                        if(cell.hasClass('eiposition')){
+                            cell.find('div.eimask').removeClass('eigroup');
+                            cell.find('div.eimask').on('animationend',function(){
+                                $(this).remove();
+                            });
+                        }
+                    });
+                });
+            }
+
+
+        }
+
+
         /**
          *
-         * @type {object}
+         * @type object
          */
          let Draw = {
             columns: {
@@ -389,6 +486,7 @@
                             let input = document.createElement("INPUT");
                             input.setAttribute("type", inputType);
                             $(input).addClass("eiedit-input");
+                            $(this).addClass("eiedit-editable");
 
                             let val = $(this).text().trim();
 
@@ -399,6 +497,7 @@
                                 
                                 val = Boolean(parseInt(val));
                                 input.checked = val;
+                                $(input).attr("eichecked",val?1:0);
                                 $(this).html(input).on("change","input",function(e){
                                     Edit.submit($(this));
                                 });
@@ -424,6 +523,14 @@
                         
                
                     }
+                },
+                highligt: function(){
+                    /**
+                     * тут можно сделать выбор ряда в шапке на котором бдут вешаться события
+                     * по группировке цветом столбцов
+                     */
+                    let hilight = $table.find('tr:nth-child(1)>th');
+                    hilight.hover(DrawGroups.viewGroup,DrawGroups.hideGroup);
                 }
                 
 
@@ -432,6 +539,10 @@
 
         };
 
+        /**
+         * Сервисный объект который содержит общие методы
+         * @type object
+         */
         let Service = {
             getTableID: function() {
                 const attr = $table.attr('tableid');
@@ -446,9 +557,12 @@
                         let headRowLength = eieditHead.length;
 
                         eieditHead.each(function( index ) {
-
+                            let firstColumn = $(this);
                             if(!index){
-                                $(this).prepend("<th class='eiedit-select-checkbox' rowspan='"+headRowLength+"' colspan='1' ><div class='eiedit-square'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></div></th>");
+                                firstColumn.prepend("<th class='eiedit-select-checkbox' rowspan='1' colspan='1' ><div class='eiedit-square'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></div></th>");
+                            }
+                            else{
+                                firstColumn.prepend("<th class='eiedit-select-checkbox' rowspan='1' colspan='1' ></th>");
                             }
 
                         });
@@ -502,6 +616,10 @@
                 }
         }
 
+        /**
+         * Объект вешающий события на добавляемые динамически элементы DOM
+         * @type object
+         */
         let DocumentEvents = {
             events: function(){
                 $(document).on('click', function(e){
@@ -551,7 +669,6 @@
                         background.remove();
 
                         if (wrapModal.length){
-                            console.log('modal removed!');
                             wrapModal.remove();
                         }
 
@@ -579,9 +696,10 @@
 
         let Messages = {
             showMsg: function(type, msg, reload = false){
+
                 if(settings.messageOn){  
                     switch (type) {
-                        case 'ok ':
+                        case 'success':
                             type = 'success';
                         break;
                         case 'info':
@@ -599,8 +717,7 @@
                     }
 
                     let msgBody ="<div id='"+type+"' class='message'>"+
-                    "<a id='close' title='Закрыть'>&times;</a>"+
-                    "<span>Важно!</span>"+ msg +"</div>";
+                    "<a id='close' title='Закрыть'>&times;</a><strong>"+ msg +"</strong></div>";
 
                     $('body').append(msgBody);
 
@@ -673,11 +790,17 @@
                         index -= 1;
                     }
 
+                    const input = $(this).find('input.eiedit-input');
+
                     if($(this).hasClass('text-input input-edit')){
-                        data['item'+index]=$(this).find('input.eiedit-input').val();
+                        data['item'+index]=input.val();
                        
                     }else if ($(this).hasClass('checkbox-input')){
-                        let checkTemp = $(this).find('input.eiedit-input').is(':checked') ? 1 : 0;
+
+                        let checkTemp = input.is(':checked') ? 1 : 0;
+
+                        input.attr("eichecked",checkTemp);
+
                         data['item'+index]=checkTemp;
                     }else{
                         data['item'+index]=$(this).text().trim();
@@ -704,10 +827,15 @@
 
         let Delete = {
             submit: function() {
-                let data = {};
+                let data={};
+                let array=[];
                 $($table).find('tbody > tr.eiedit-selected').each(function(rowIndex){
-                    data['id'+rowIndex] = $(this).attr(settings.identifier.idName);
+
+                    array[rowIndex] = $(this).attr(settings.identifier.idName);
+
                 });
+
+                data.item0 = array;
                 data['action'] = 'delete';
                 Sender.sendData(data);
 
@@ -735,7 +863,7 @@
                 });
 
                 data['action'] = 'insert';
-                console.log(data);
+
                 Sender.sendData(data);
 
             }
@@ -758,7 +886,8 @@
                 }).then((response) => response.json())
                 .then((data) => {
 
-                    Messages.showMsg(data[0],'Данные обновлены!');
+                    Messages.showMsg(data.status,data.message,data.reload);
+                    console.log('Данные пришли');
                     Messages.checkServerAnswer.stopChecking(timer);
 
                 });
@@ -769,6 +898,7 @@
 
         Draw.columns.identifier();
         Draw.columns.editable();
+        Draw.columns.highligt();
         DocumentEvents.events();
         Service.updDelColumn();
          
