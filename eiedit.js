@@ -1,11 +1,11 @@
 /*!
- * EiEdit v1.1.0 
+ * EiEdit v1.1.1 
  * 2022 Kostyuchenko Sergey
  */
 
 /**
  * @description inline editor for tables.
- * @version 1.1.0
+ * @version 1.1.1
  * @author Kostyuchenko Sergey
  */
 
@@ -390,7 +390,6 @@
 
                         let msgWindow = $("div.eigroup-msg.gr"+i);
 
-                        console.log(event);
                         if(msgWindow.length && event === "mouseleave"){
 
                                 msgWindow.removeClass('eigroup');
@@ -792,7 +791,8 @@
 
                     const input = $(this).find('input.eiedit-input');
 
-                    if($(this).hasClass('text-input input-edit')){
+                    if($(this).hasClass('text-input') && $(this).hasClass('input-edit')){
+                        
                         data['item'+index]=input.val();
                        
                     }else if ($(this).hasClass('checkbox-input')){
@@ -887,7 +887,6 @@
                 .then((data) => {
 
                     Messages.showMsg(data.status,data.message,data.reload);
-                    console.log('Данные пришли');
                     Messages.checkServerAnswer.stopChecking(timer);
 
                 });
