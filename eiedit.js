@@ -1,11 +1,11 @@
 /*!
- * EiEdit v1.1.1 
+ * EiEdit v1.1.2 
  * 2022 Kostyuchenko Sergey
  */
 
 /**
  * @description inline editor for tables.
- * @version 1.1.1
+ * @version 1.1.2
  * @author Kostyuchenko Sergey
  */
 
@@ -307,7 +307,7 @@
                             
                         });
 
-                        
+                        form += '</div>'; 
                     }
                     else{
 
@@ -318,8 +318,6 @@
 
 
                 }
-              
-                form += '</div>';
 
                 let buttons = `<div class='ei-modal-buttons'>` +okButton+ 
                                 `<input type='button' class='btn btn-secondary ei-btn-modal ei-cancel-btn' value='Отмена'>
@@ -684,7 +682,7 @@
         * Четыре типа сообщений type: ок, info, warning, error.
         * msg- отображаемое сообщение.
         * let obj = checkAnswer() -проверка был ли вообще ответ сервера?
-        * Ждем ответа 10 секунд и в случае если ответа нет, 
+        * Ждем ответа 20 секунд и в случае если ответа нет, 
         * выводим ошибку:"Нет ответа сервера".
         * stopChecking(obj) - отключает проверку в 
         * случае если ответ получен.
