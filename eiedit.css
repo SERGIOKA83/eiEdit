@@ -3,11 +3,10 @@
 .pop{
     position: absolute;
     border: 1px solid black;
-    padding: 10px;
+    padding: 5px;
     background: #f0f0f0;
-    transform: translateX(-50%);
-    left: 83px; 
-    width: 250px;
+    left: -10px;
+    width: 230px;
     border-radius: 0.3rem;
     z-index: 100;
     box-shadow: 0 12px 30px 0 rgba(0, 0, 0, 0.5);
@@ -24,7 +23,7 @@
     width: 1rem;
     height: 0.5rem;
     transform: translate(-50%,100%);
-    left: 23px;
+    left: 17px;
     bottom: 0;
 }
 
@@ -38,9 +37,19 @@
     border-width: 0.5rem 0.5rem 0;
 }
 
+#digest td[data-description] .triangle{
+    position: absolute;
+    display: block;
+    height: 0.5rem;
+    transform: translate(-50%,0%);
+    left: 50%;
+    top: 100%!important;
+}
+
 .triangle::before{
     bottom: 0;
     border-top-color: rgba(0,0,0,1);
+
 
 }
 .triangle::after{
@@ -52,17 +61,23 @@ input.btn-pop{
     margin: 10px 5px 10px 5px;
     padding: 0 5px 0 5px;
 }
+
+div.popup-name > div.triangle{
+    left: 50%;
+}
 /*------popover-------*/
 
 /*extra column for insert and delete information*/
 .eiedit-square{
     position: relative;
     text-align: center;
+    display:inline;
 }
 
 .eiedit-square > .fa{
     cursor: pointer;
     color: #626161;
+    font-size : 20px;
 }
 
 .eiedit-square > .fa:hover{
@@ -70,11 +85,12 @@ input.btn-pop{
 }
 
 .eiedit-square >.pop{
-    width: 200px;
+    width: 230px;
 }
 
-th.eiedit-select-checkbox{
+table.dataTable thead th.eiedit-select-checkbox{
     vertical-align: middle;
+    text-align: center;
 }
 
 td.eiedit-select-checkbox{
@@ -130,7 +146,7 @@ tr.eiedit-selected td.eiedit-select-checkbox:after{
     transparent 75%, transparent);
     box-shadow: 0 0 8px rgba(0,0,0,.3);        
     font:16px 'Open Sans';
-    width: 50%;
+    width: 25%;
     bottom: 60px;
     margin: 20px auto;
     padding:15px;
@@ -353,7 +369,7 @@ table.eiedit td.eiedit-editable:not(.checkbox-input){
 
 .eimask:not(.eigroup)
 {
-    animation: group-out-opacity-animate 0.5s ease-in-out;  */
+    animation: group-out-opacity-animate 0.5s ease-in-out; 
 }
 
 .eigroup-msg:not(.eigroup){
@@ -394,6 +410,64 @@ table.eiedit td.eiedit-editable:not(.checkbox-input){
     height: 100%;
     border: 1px solid #0330b4;
 }
+
+/*-------------sSelect--------------*/
+/* Для подсказок на ячейках таблицы с селектами */
+td.select[data-description]>div.popup-name{
+    position:absolute;
+    border: 1px solid black;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 3px;
+    top: -15px!important;
+    transform: translate(-50%,-100%);
+    left:50%;
+    z-index: 110;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 2px 5px;
+    height: fit-content;
+}
+
+/* Для подсказок на ячейках таблицы без полей ввода */
+td[data-description]>div.popup-name{
+    position:absolute;
+    border: 1px solid black;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 3px;
+    bottom: 15px;
+    transform: translate(-50%,-100%); 
+    left: 50%;
+    z-index: 110;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 2px 5px;
+}
+
+td.select{
+    padding:0;
+    text-align: center;
+}
+
+td.select[data-id]{
+    width: 70px;
+}
+
+td.select .rank > select{
+    padding: 3px 5px;
+    width: 60px;
+    margin: 0 auto;
+}
+
+.select > .wrap > .rank{
+    border-bottom: 1px solid black;
+}
+
+.select > .wrap > .rank,
+.select > .wrap > .ratio{
+    padding: 3px;
+    height: 39px;
+}
+/*-------------sSelect--------------*/
 
 @keyframes group-in-opacity-animate {
     from {
@@ -442,6 +516,34 @@ table.eiedit td.eiedit-editable:not(.checkbox-input){
     }
 }
 
+@keyframes pos-out-animate800 {
+    from {
+        right: -50%;
+    }
+    to {
+        right: 0;
+    }
+}
+
+@keyframes pos-in-animate800 {
+    from {
+        right: 0;
+    }
+    to {
+        right: -50%;
+    }
+}
+@media (max-height: 800px) {
+    .message{
+        right: 0%;
+        animation: bg-animate 5s linear infinite, pos-out-animate800 0.5s ease-in-out;
+    }
+    .close{
+        left: auto;
+        animation: pos-in-animate800 .5s ease-in-out;
+    }
+
+}
 @keyframes opacity-in-animate {
     from {
         opacity:0;
