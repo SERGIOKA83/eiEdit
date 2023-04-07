@@ -9,6 +9,8 @@
  * @author Kostyuchenko Sergey
  */
 
+//Для блокировки исчезновения инпута, ищи строку в коде 717
+
  if (typeof jQuery === 'undefined') {
     throw new Error('jQuery не подключен !');
  }
@@ -223,12 +225,21 @@
                     if($(this).hasClass("select")) {
 
                             Sender.sendSelectData(data,this);
-            
                     } 
                     else {
+                        
                         value = $(this).text().trim();
+                        $(this).attr('data-text', value);
+                        if($(this).hasClass("date-input")) {
 
-                        $(this).html('<input class="form-control eiedit-block eiedit-input" type="text">');
+                            let dateArray = value.split('.');
+
+                            value = dateArray[2]+"-"+dateArray[1]+"-"+dateArray[0];
+
+                            $(this).html('<input class="form-control eiedit-block eiedit-input" type="date">');
+                        } else{
+                            $(this).html('<input class="form-control eiedit-block eiedit-input" type="text">');
+                        }
                         input = $(this).find('input');
             
                         input.val(value);
@@ -240,7 +251,7 @@
             hideElement: function() {
                 let value;
                 let id;
-                let element = $(this);
+                let element = $(this)
                 if(element.parent('div').hasClass("rank")){
 
                     value = element.find('option:selected').val();
@@ -260,10 +271,15 @@
 
                     }else{
                         let inputElement = element.parent('td').find('input');
-                        value = inputElement.val();
-                        element.parent('td').removeClass("input-edit");
-                        $(this).parent('td').text(value);
-                        element.remove();
+
+                        if (inputElement.length) {
+                           
+                            value = inputElement.parent('td').data('text');
+                            element.parent('td').removeClass("input-edit");                        
+                            $(this).parent('td').text(value);
+                            
+                        } 
+                        element.remove(); 
                     }
                 }
             
@@ -644,6 +660,9 @@
                             case 'select':
                                 inputType = 'select'; 
                             break;
+                            case 'date':
+                                inputType = 'date'; 
+                            break;
                             default:
                                 inputType = 'text';  
                           }
@@ -682,6 +701,9 @@
                                          
                                         }
 
+                                    break;
+                                    case 'date':
+                                        $(this).addClass("date-input"); 
                                     break;
                                     default:
                                         $(this).addClass("text-input"); 
@@ -1152,32 +1174,43 @@
                         }
                         index -= 1;
                     }
-
+                    //console.log($(this));
                     const input = $(this).find('input.eiedit-input');
                     const selectInput = $(this).find(".wrap > .rank");
 
                     if($(this).hasClass('text-input') && $(this).hasClass('input-edit')){
                         
                         data['item'+index]=input.val();
+                        $(this).data('text',input.val());
                        
-                    }else if ($(this).hasClass('checkbox-input')){
+                    }else 
+                        if ($(this).hasClass('checkbox-input')){
 
-                        let checkTemp = input.is(':checked') ? 1 : 0;
+                            let checkTemp = input.is(':checked') ? 1 : 0;
 
-                        input.attr("eichecked",checkTemp);
+                            input.attr("eichecked",checkTemp);
 
-                        data['item'+index]=checkTemp;
-                    }else{
-                        if(selectInput.length){
-                            data['item'+index] = selectInput.text().trim()
+                            data['item'+index]=checkTemp;
+                        }else{
+                            if($(this).hasClass('date-input') && $(this).hasClass('input-edit')){
+                                console.log('hghghhghghhg');
+                                
+                                let dateArray = input.val().split('-');
+                                console.log(dateArray[2]+'.'+dateArray[1]+'.'+dateArray[0]);
+                                let val = dateArray[2]+'.'+dateArray[1]+'.'+dateArray[0];
+                                data['item'+index] = val;
+                                $(this).data('text',val);
+                            }else{
+                                if(selectInput.length){
+                                    data['item'+index] = selectInput.text().trim()
+                                }
+                                else{
+                                    data['item'+index] = $(this).text().trim();
+                                }
+                            }
                         }
-                        else{
-                            data['item'+index] = $(this).text().trim();
-                        }
 
-                    }
-
-                })
+                    })
                 data['action'] = 'update';
 
                 Sender.sendData(data);
