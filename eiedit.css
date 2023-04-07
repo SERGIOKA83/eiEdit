@@ -121,6 +121,10 @@ tr.eiedit-selected td.eiedit-editable{
     box-shadow: inset 0 0 0 9999px rgb(13 181 253 / 95%) !important ;
 }
 
+td.eiedit-editable > input[type=date]{
+    width: 150px;
+}
+
 tr.eiedit-selected td.eiedit-select-checkbox:after{
     content: "✓";
     font-size: 20px;
