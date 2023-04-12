@@ -9,7 +9,7 @@
  * @author Kostyuchenko Sergey
  */
 
-//Для блокировки исчезновения инпута, ищи строку в коде 717
+//Для блокировки исчезновения инпута, ищи строку в коде 731
 
  if (typeof jQuery === 'undefined') {
     throw new Error('jQuery не подключен !');
