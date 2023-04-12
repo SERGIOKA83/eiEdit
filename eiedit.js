@@ -435,7 +435,10 @@
                                 break;
                                 case 'select':
                                     labelsInput = "<span><select class='form-select' get-api='"+settings.editable[i].action+"' id='"+settings.fields[i].column+"'><option value=''></option></select></span>";
-                                  break;
+                                break;
+                                case 'date':
+                                    labelsInput = "<span><input class='form-control' type='date' id='"+settings.editable[i].column+"'></span>";
+                                break;
                                 default:
                                     labelsInput = "<input class='form-control' type='text' id='"+settings.fields[i].column+"'>";
                             }
@@ -465,23 +468,28 @@
                                }
 
                                inputType = settings.editable[i].type;
+
                                switch (inputType) {
-                                case 'checkbox':
-                                    labelsInput = "<span><input type='checkbox' id='"+settings.editable[i].column+"'></span>";
-                                  break;
-                                  case 'select':
-                                    labelsInput = "<span><select class='form-select' get-api='"+settings.editable[i].action+"' id='"+settings.editable[i].column+"'><option value=''></option></select></span>";
-                                  break;
-                                default:
-                                    labelsInput = "<input class='form-control' type='text' id='"+settings.editable[i].column+"'>";
+                                    case 'checkbox':
+                                        labelsInput = "<span><input type='checkbox' id='"+settings.editable[i].column+"'></span>";
+                                    break;
+                                    case 'select':
+                                        labelsInput = "<span><select class='form-select' get-api='"+settings.editable[i].action+"' id='"+settings.editable[i].column+"'><option value=''></option></select></span>";
+                                    break;
+                                    case 'date':
+                                        labelsInput = "<span><input class='form-control' type='date' id='"+settings.editable[i].column+"'></span>";
+                                    break;
+                                    default:
+                                        labelsInput = "<input class='form-control' type='text' id='"+settings.editable[i].column+"'>";
 
                                 }
 
                                form += "<div><label for='"+settings.editable[i].column+"'>"+str+"</label>"+labelsInput+"</div>";
-
+                                
                             }
 
                         });
+   
 
                         form += '</div>';
                     }
@@ -749,6 +757,21 @@
          * @type object
          */
         let Service = {
+            formateDate: function() {
+
+                let value = new Date();
+
+                let dd = value.getDate();
+                if (dd < 10) dd = '0' + dd;
+                              
+                let mm = value.getMonth() + 1;
+                if (mm < 10) mm = '0' + mm;
+                              
+                let yy = value.getFullYear();
+                              
+                return dd + '.' + mm + '.' + yy;
+                
+            },
             indexDomObject: function(obj){
 
                 let index = 0;
@@ -1005,7 +1028,7 @@
                         data.rank = $(this).val();
                         data.rowID = rowID;
                         data.ratio = value;
-                        console.log(data);
+
                         Sender.sendData(data);
                         
                     }
@@ -1193,11 +1216,18 @@
                             data['item'+index]=checkTemp;
                         }else{
                             if($(this).hasClass('date-input') && $(this).hasClass('input-edit')){
-                                console.log('hghghhghghhg');
+                                let val;
+                                if(input.val() == ""){
+                              
+                              
+                                    val = Service.formateDate();
+                                    
+                                } else{
+                                    let dateArray = input.val().split('-');
+                                    val = dateArray[2]+'.'+dateArray[1]+'.'+dateArray[0];
+                                }
                                 
-                                let dateArray = input.val().split('-');
-                                console.log(dateArray[2]+'.'+dateArray[1]+'.'+dateArray[0]);
-                                let val = dateArray[2]+'.'+dateArray[1]+'.'+dateArray[0];
+                                
                                 data['item'+index] = val;
                                 $(this).data('text',val);
                             }else{
@@ -1272,6 +1302,17 @@
                         break;
                         case 'select':
                             value = input.find( "option:selected" ).val();
+                        break;
+                        case 'date':
+                            if(input.val() == ""){
+                              
+                              
+                                value = Service.formateDate();
+                                
+                            } else{
+                                let dateArray = input.val().split('-');
+                                value = dateArray[2]+"."+dateArray[1]+"."+dateArray[0];
+                            }
                         break;
                         default:
                             value = input.val();
