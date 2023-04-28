@@ -1,11 +1,11 @@
 /*!
- * EiEdit v1.1.0 
+ * EiEdit v1.2.0 
  * 2022 Kostyuchenko Sergey
  */
 
 /**
  * @description inline editor for tables.
- * @version 1.1.0
+ * @version 1.2.0
  * @author Kostyuchenko Sergey
  */
 
@@ -217,7 +217,7 @@
                 let input ={};
                 let value = '';
                 let data = {};
-
+                
                 if(!$(this).hasClass("input-edit")){
 
                     $(this).addClass("input-edit");
@@ -246,7 +246,8 @@
 
                         input.trigger( "focus" ).val(value);
                     }   
-                }        
+                }  
+     
             },
             hideElement: function() {
                 let value;
@@ -723,8 +724,10 @@
                                 if (typeof attr === 'undefined' || attr === false || attr !== "0" ) {
                                     $(this).attr("tabindex",0);
                                 }
-                               
-                                $(this).on("click focus",DrawElement.viewElement);
+                              
+                                if(!$(this).hasClass("eiBlock")){
+                                    $(this).on("click focus",DrawElement.viewElement);
+                                }
 
                                 //Если нужно отключить исчезновение динамически появляющихся полей ввода, 
                                 //то нужно закоментить строку кода ниже.
