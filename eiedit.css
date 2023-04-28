@@ -348,6 +348,13 @@ table.eiedit td.eiedit-editable{
     border-right: 2px solid #888888;
     background-color: aliceblue;
 }
+
+table.eiedit td.eiedit-editable.eiBlock{
+    border-left: 2px solid #888888;
+    border-right: 2px solid #888888;
+    background-color: rgb(255, 195, 195);
+}
+
 table.eiedit td.eiedit-editable:not(.checkbox-input){
     cursor: pointer;
 }
